@@ -24,13 +24,13 @@ func (l *AbstractLimit) GetLimit() int {
 }
 
 func (l *AbstractLimit) OnSample(startTime int64, rtt int64, inflight int, didDrop bool) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+
 	l.SetLimit(l._Update(startTime, rtt, inflight, didDrop))
 }
 
 func (l *AbstractLimit) SetLimit(newLimit int) {
-	l.mu.Lock()
-	defer l.mu.Unlock()
-
 	if newLimit != l.Limit {
 		l.Limit = newLimit
 	}

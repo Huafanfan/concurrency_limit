@@ -1,38 +1,34 @@
 package limiter
 
 import (
+	"context"
 	"git.garena.com/yifan.zhangyf/concurrency_limit/limits_core"
 	"github.com/marusama/semaphore/v2"
 )
 
 type SimpleLimiter struct {
-	alimiter  *AbstractLimiter
+	aLimiter  *AbstractLimiter
 	semaphore semaphore.Semaphore
 }
 
 func NewSimpleLimiter(limit limits_core.Limit) *SimpleLimiter {
 	s := &SimpleLimiter{}
-	s.alimiter = NewAbstractLimiter(limit)
-	s.semaphore = semaphore.New(s.alimiter.GetLimit())
+	s.aLimiter = NewAbstractLimiter(limit)
+	s.semaphore = semaphore.New(s.aLimiter.GetLimit())
 	return s
 }
 
-func (sLimiter *SimpleLimiter) Acquire() limits_core.Listener {
+func (sLimiter *SimpleLimiter) Acquire(ctx context.Context) limits_core.Listener {
 	if !sLimiter.semaphore.TryAcquire(1) {
-		return sLimiter.alimiter.CreateRejectedListener()
+		return sLimiter.aLimiter.CreateRejectedListener()
 	}
-	return sLimiter.alimiter.CreateListener()
+	listener := sLimiter.aLimiter.CreateListener()
+	return NewSimpleListener(listener, sLimiter)
 }
 
 func (sLimiter *SimpleLimiter) OnNewLimit(newLimit int) {
-	oldLimit := sLimiter.alimiter.GetLimit()
-	sLimiter.alimiter.OnNewLimit(newLimit)
-
-	if newLimit > oldLimit {
-		sLimiter.semaphore.SetLimit(newLimit - oldLimit)
-	} else {
-		sLimiter.semaphore.SetLimit(oldLimit - newLimit)
-	}
+	sLimiter.aLimiter.OnNewLimit(newLimit)
+	sLimiter.semaphore.SetLimit(newLimit)
 }
 
 type SimpleListener struct {
@@ -67,7 +63,7 @@ func (sListener *SimpleListener) OnDropped(endTime int64) {
 }
 
 func (sListener *SimpleListener) UpdateLimit() {
-	if sListener.sLimiter.alimiter.GetLimit() != sListener.sLimiter.alimiter.limitAlgorithm.GetLimit() {
-		sListener.sLimiter.OnNewLimit(sListener.sLimiter.alimiter.limitAlgorithm.GetLimit())
+	if sListener.sLimiter.aLimiter.GetLimit() != sListener.sLimiter.aLimiter.limitAlgorithm.GetLimit() {
+		sListener.sLimiter.OnNewLimit(sListener.sLimiter.aLimiter.limitAlgorithm.GetLimit())
 	}
 }

@@ -2,34 +2,31 @@ package limit
 
 import (
 	"fmt"
-	"math"
-	"sync"
-
 	"git.garena.com/yifan.zhangyf/concurrency_limit/limits_core"
 	"git.garena.com/yifan.zhangyf/concurrency_limit/limits_core/limit/measurement"
+	"math"
+)
+
+const (
+	DefaultGradientSmoothing = 0.2
+	DefaultLongWindow        = 600
+	DefaultTolerance         = 1.5
 )
 
 var (
-	DefaultSmoothing  = 0.2
-	DefaultQueueSize  = func(f float64) float64 { return math.Log10(f) }
-	DefaultLongWindow = 600
-	DefaultTolerance  = 1.5
+	DefaultQueueSize = func(f float64) float64 { return math.Log10(f) }
 )
 
 type Gradient2Limit struct {
 	*AbstractLimit
-
 	EstimatedLimit float64
-
-	LastRtt   int64
-	LongRtt   measurement.Measurement
-	MaxLimit  int
-	MinLimit  int
-	QueueSize func(float64) float64
-	Smoothing float64
-	Tolerance float64
-
-	mu sync.RWMutex
+	LastRtt        int64
+	LongRtt        measurement.Measurement
+	MaxLimit       int
+	MinLimit       int
+	QueueSize      func(float64) float64
+	Smoothing      float64
+	Tolerance      float64
 }
 
 func NewGradient2Limit(initialLimit int, maxConcurrency int, minLimit int, queueSize func(float64) float64, smoothing float64, rttTolerance float64, longWindow int) limits_core.Limit {
@@ -51,9 +48,6 @@ func NewGradient2Limit(initialLimit int, maxConcurrency int, minLimit int, queue
 }
 
 func (g *Gradient2Limit) _Update(startTime int64, rtt int64, inflight int, didDrop bool) int {
-	g.mu.Lock()
-	defer g.mu.Unlock()
-
 	queueSize := g.QueueSize(g.EstimatedLimit)
 	g.LastRtt = rtt
 	shortRtt := float64(rtt)
@@ -83,7 +77,7 @@ func (g *Gradient2Limit) _Update(startTime int64, rtt int64, inflight int, didDr
 	newLimit = math.Max(float64(g.MinLimit), math.Min(float64(g.MaxLimit), newLimit))
 
 	if g.EstimatedLimit != newLimit {
-		GetUnifiedLogger().Info(fmt.Sprintf("New limit=%v shortRtt=%v ms longRtt=%v ms queueSize=%v gradient=%v",
+		GetUnifiedLogger().Debug(fmt.Sprintf("New limit=%v shortRtt=%v ms longRtt=%v ms queueSize=%v gradient=%v",
 			newLimit,
 			g.GetLastRtt()/1000000.0,
 			g.GetRttNoLoad()/1000000,

@@ -40,7 +40,7 @@ func NewAIMDLimit(initialLimit int, backoffRatio float64, timeout int64, maxLimi
 
 func (a *AIMDLimit) _Update(startTime int64, rtt int64, inflight int, didDrop bool) int {
 	currentLimit := a.GetLimit()
-	//
+
 	if didDrop || rtt > a.Timeout {
 		currentLimit = int(float64(currentLimit) * a.BackoffRatio)
 	} else if inflight*2 >= currentLimit {

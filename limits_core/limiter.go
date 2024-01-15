@@ -1,7 +1,9 @@
 package limits_core
 
+import "context"
+
 type Limiter interface {
-	Acquire() Listener
+	Acquire(ctx context.Context) Listener
 }
 
 type Listener interface {

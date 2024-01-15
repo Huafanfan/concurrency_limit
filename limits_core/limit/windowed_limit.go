@@ -61,7 +61,6 @@ func (w *WindowedLimit) OnSample(startTime int64, rtt int64, inflight int, didDr
 			w.Delegate.OnSample(startTime, current.GetTrackedRttNanos(), current.GetMaxInFlight(), current.GetDidDrop())
 		}
 	}
-	GetUnifiedLogger().Flush()
 }
 
 func (w *WindowedLimit) isWindowReady(sample window.SampleWindow) bool {
