@@ -2,10 +2,12 @@ package limit
 
 import (
 	"fmt"
-	"git.garena.com/yifan.zhangyf/concurrency_limit/limits_core"
+	"log"
 	"math"
 	"math/rand"
 	"time"
+
+	"github.com/Huafanfan/concurrency_limit/limits_core"
 )
 
 const (
@@ -68,7 +70,6 @@ func (v *VegasLimit) ShouldProbe() bool {
 func (v *VegasLimit) _Update(startTime int64, rtt int64, inflight int, didDrop bool) int {
 	v.ProbeCount++
 	if v.ShouldProbe() {
-		GetUnifiedLogger().Debug(fmt.Sprintf("Probe MinRTT %v", rtt/1000000.0))
 		v.ResetProbeJitter()
 		v.ProbeCount = 0
 		v.RttNoLoad = rtt
@@ -76,7 +77,6 @@ func (v *VegasLimit) _Update(startTime int64, rtt int64, inflight int, didDrop b
 	}
 
 	if v.RttNoLoad == 0 || rtt < v.RttNoLoad {
-		GetUnifiedLogger().Debug(fmt.Sprintf("New MinRTT %v", rtt/1000000.0))
 		v.RttNoLoad = rtt
 		return int(v.EstimatedLimit)
 	}
@@ -109,7 +109,7 @@ func (v *VegasLimit) updateEstimatedLimit(rtt int64, inflight int, didDrop bool)
 	newLimit = math.Max(1, math.Min(float64(v.MaxLimit), newLimit))
 	newLimit = (1-v.Smoothing)*v.EstimatedLimit + v.Smoothing*newLimit
 	if int(newLimit) != int(v.EstimatedLimit) {
-		GetUnifiedLogger().Debug(fmt.Sprintf("New limit=%v shortRtt=%v ms longRtt=%v ms queueSize=%v",
+		log.Printf(fmt.Sprintf("New limit=%v shortRtt=%v ms longRtt=%v ms queueSize=%v",
 			newLimit,
 			v.RttNoLoad/1000000.0,
 			rtt/1000000,

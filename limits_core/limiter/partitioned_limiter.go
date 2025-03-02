@@ -2,11 +2,12 @@ package limiter
 
 import (
 	"context"
-	"git.garena.com/yifan.zhangyf/concurrency_limit/limits_core"
 	"math"
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/Huafanfan/concurrency_limit/limits_core"
 )
 
 type PartitionedLimiter struct {

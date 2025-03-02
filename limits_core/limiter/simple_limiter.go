@@ -2,7 +2,8 @@ package limiter
 
 import (
 	"context"
-	"git.garena.com/yifan.zhangyf/concurrency_limit/limits_core"
+
+	"github.com/Huafanfan/concurrency_limit/limits_core"
 	"github.com/marusama/semaphore/v2"
 )
 

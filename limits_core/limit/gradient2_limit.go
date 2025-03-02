@@ -2,9 +2,11 @@ package limit
 
 import (
 	"fmt"
-	"git.garena.com/yifan.zhangyf/concurrency_limit/limits_core"
-	"git.garena.com/yifan.zhangyf/concurrency_limit/limits_core/limit/measurement"
+	"log"
 	"math"
+
+	"github.com/Huafanfan/concurrency_limit/limits_core"
+	"github.com/Huafanfan/concurrency_limit/limits_core/limit/measurement"
 )
 
 const (
@@ -77,7 +79,7 @@ func (g *Gradient2Limit) _Update(startTime int64, rtt int64, inflight int, didDr
 	newLimit = math.Max(float64(g.MinLimit), math.Min(float64(g.MaxLimit), newLimit))
 
 	if g.EstimatedLimit != newLimit {
-		GetUnifiedLogger().Debug(fmt.Sprintf("New limit=%v shortRtt=%v ms longRtt=%v ms queueSize=%v gradient=%v",
+		log.Printf(fmt.Sprintf("New limit=%v shortRtt=%v ms longRtt=%v ms queueSize=%v gradient=%v",
 			newLimit,
 			g.GetLastRtt()/1000000.0,
 			g.GetRttNoLoad()/1000000,

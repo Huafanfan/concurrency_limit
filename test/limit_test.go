@@ -2,16 +2,16 @@ package test
 
 import (
 	"context"
-	"github.com/marusama/semaphore/v2"
 	"math/rand"
 	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
 
-	"git.garena.com/yifan.zhangyf/concurrency_limit/limits_core/limit"
-	"git.garena.com/yifan.zhangyf/concurrency_limit/limits_core/limit/window"
-	"git.garena.com/yifan.zhangyf/concurrency_limit/limits_core/limiter"
+	"github.com/Huafanfan/concurrency_limit/limits_core/limit"
+	"github.com/Huafanfan/concurrency_limit/limits_core/limit/window"
+	"github.com/Huafanfan/concurrency_limit/limits_core/limiter"
+	"github.com/marusama/semaphore/v2"
 )
 
 func TestLimit(t *testing.T) {

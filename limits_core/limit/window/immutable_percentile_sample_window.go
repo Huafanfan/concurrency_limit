@@ -4,7 +4,7 @@ import (
 	"math"
 	"sort"
 
-	"git.garena.com/yifan.zhangyf/concurrency_limit/limits_core/utils"
+	"github.com/Huafanfan/concurrency_limit/limits_core/utils"
 )
 
 type ImmutablePercentileSampleWindow struct {

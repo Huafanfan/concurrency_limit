@@ -2,11 +2,12 @@ package limit
 
 import (
 	"fmt"
+	"log"
 	"math"
 	"sync"
 	"time"
 
-	"git.garena.com/yifan.zhangyf/concurrency_limit/limits_core"
+	"github.com/Huafanfan/concurrency_limit/limits_core"
 )
 
 var (
@@ -47,7 +48,7 @@ func (a *AIMDLimit) _Update(startTime int64, rtt int64, inflight int, didDrop bo
 		currentLimit = currentLimit + 1
 	}
 
-	GetUnifiedLogger().Info(fmt.Sprintf("New limit=%v", currentLimit))
+	log.Printf(fmt.Sprintf("New limit=%v", currentLimit))
 
 	return int(math.Min(float64(a.MaxLimit), math.Max(float64(a.MinLimit), float64(currentLimit))))
 }

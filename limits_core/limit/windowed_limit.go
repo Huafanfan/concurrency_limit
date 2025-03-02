@@ -6,8 +6,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"git.garena.com/yifan.zhangyf/concurrency_limit/limits_core"
-	"git.garena.com/yifan.zhangyf/concurrency_limit/limits_core/limit/window"
+	"github.com/Huafanfan/concurrency_limit/limits_core"
+	"github.com/Huafanfan/concurrency_limit/limits_core/limit/window"
 )
 
 var (
